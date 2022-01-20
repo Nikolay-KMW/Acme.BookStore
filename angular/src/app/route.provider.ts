@@ -15,6 +15,27 @@ function configureRoutes(routesService: RoutesService) {
         order: 1,
         layout: eLayoutType.application,
       },
+      {
+        path: '/dashboard',
+        name: '::Menu:Dashboard',
+        iconClass: 'fas fa-chart-line',
+        order: 2,
+        layout: eLayoutType.application,
+        requiredPolicy: 'BookStore.Dashboard.Host || AbpAccount.SettingManagement',
+      },
+      {
+        path: '/book-store',
+        name: '::Menu:BookStore',
+        iconClass: 'fas fa-book',
+        order: 101,
+        layout: eLayoutType.application,
+      },
+      {
+        path: '/books',
+        name: '::Menu:Books',
+        parentName: '::Menu:BookStore',
+        layout: eLayoutType.application
+      }
     ]);
   };
 }
