@@ -14,6 +14,7 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Acme.BookStore.Books;
 using Volo.Abp.EntityFrameworkCore.Modeling;
+using Acme.BookStore.Authors;
 
 namespace Acme.BookStore.EntityFrameworkCore
 {
@@ -28,9 +29,10 @@ namespace Acme.BookStore.EntityFrameworkCore
         /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
         public DbSet<Book> Books { get; set; }
-        
+        public DbSet<Author> Authors { get; set; }
+
         #region Entities from the modules
-        
+
         /* Notice: We only implemented IIdentityDbContext and ITenantManagementDbContext
          * and replaced them for this DbContext. This allows you to perform JOIN
          * queries for the entities of these modules over the repositories easily. You
@@ -41,7 +43,7 @@ namespace Acme.BookStore.EntityFrameworkCore
          * More info: Replacing a DbContext of a module ensures that the related module
          * uses this DbContext on runtime. Otherwise, it will use its own DbContext class.
          */
-        
+
         //Identity
         public DbSet<IdentityUser> Users { get; set; }
         public DbSet<IdentityRole> Roles { get; set; }
@@ -91,6 +93,20 @@ namespace Acme.BookStore.EntityFrameworkCore
                 b.ToTable(BookStoreConsts.DbTablePrefix + "Books", BookStoreConsts.DbSchema);
                 b.ConfigureByConvention();
                 b.Property(x=> x.Name).IsRequired().HasMaxLength(128);
+            });
+
+            builder.Entity<Author>(b =>
+            {
+                b.ToTable(BookStoreConsts.DbTablePrefix + "Authors",
+                    BookStoreConsts.DbSchema);
+
+                b.ConfigureByConvention();
+
+                b.Property(x => x.Name)
+                    .IsRequired()
+                    .HasMaxLength(AuthorConsts.MaxNameLength);
+
+                b.HasIndex(x => x.Name);
             });
         }
     }
