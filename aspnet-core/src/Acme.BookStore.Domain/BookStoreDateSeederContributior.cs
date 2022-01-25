@@ -26,36 +26,13 @@ namespace Acme.BookStore
         }
         public async Task SeedAsync(DataSeedContext context)
         {
-            // Seed data for Books
-            if (await _bookRepository.GetCountAsync() <= 0)
+            if (await _bookRepository.GetCountAsync() > 0)
             {
-                await _bookRepository.InsertAsync(
-                    new Book
-                    {
-                        Name = "1984",
-                        Type = BookType.Dystopia,
-                        PublishDate = new DateTime(1949, 6, 8),
-                        Price = 19.84f
-                    },
-                    autoSave: true
-                );
-
-                await _bookRepository.InsertAsync(
-                    new Book
-                    {
-                        Name = "The Hitchhiker's Guide to the Galaxy",
-                        Type = BookType.ScienceFiction,
-                        PublishDate = new DateTime(1995, 9, 27),
-                        Price = 42.0f
-                    },
-                    autoSave: true
-                );
+                return;
             }
 
             // Seed data for Authors
-            if (await _authorRepository.GetCountAsync() <= 0)
-            {
-                await _authorRepository.InsertAsync(
+            var orwell = await _authorRepository.InsertAsync(
                     await _authorManager.CreateAsync(
                         "George Orwell",
                         new DateTime(1903, 06, 25),
@@ -64,7 +41,7 @@ namespace Acme.BookStore
                     )
                 );
 
-                await _authorRepository.InsertAsync(
+            var douglas = await _authorRepository.InsertAsync(
                     await _authorManager.CreateAsync(
                         "Douglas Adams",
                         new DateTime(1952, 03, 11),
@@ -73,7 +50,31 @@ namespace Acme.BookStore
                         "a lover of fast cars, technological innovation and the Apple Macintosh, and a self-proclaimed 'radical atheist'."
                     )
                 );
-            }
+
+            // Seed data for Books
+            await _bookRepository.InsertAsync(
+                new Book
+                {
+                    AuthorId = orwell.Id,
+                    Name = "1984",
+                    Type = BookType.Dystopia,
+                    PublishDate = new DateTime(1949, 6, 8),
+                    Price = 19.84f
+                },
+                autoSave: true
+            );
+
+            await _bookRepository.InsertAsync(
+                new Book
+                {
+                    AuthorId = douglas.Id,
+                    Name = "The Hitchhiker's Guide to the Galaxy",
+                    Type = BookType.ScienceFiction,
+                    PublishDate = new DateTime(1995, 9, 27),
+                    Price = 42.0f
+                },
+                autoSave: true
+            );
         }
     }
 }
